@@ -1400,7 +1400,7 @@ All application behavior was then verified through the project's automated tests
 
 # Demo
 
-A short 2–4 minute demonstration should show the following sequence:
+A short 2–4 minute demo at the top displays the following
 
 ### 1. Knowledge-base question
 
@@ -1446,7 +1446,7 @@ Ask:
 Are all fabrics and adhesives in your bags vegan?
 ```
 
-Show that the agent refuses to invent unsupported information and recommends human confirmation.
+Shows that the agent refuses to invent unsupported information and recommends human confirmation.
 
 ### 5. Evaluation
 
