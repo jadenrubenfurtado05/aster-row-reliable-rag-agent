@@ -1,6 +1,6 @@
 # Aster & Row Reliable RAG Support Agent
 
-[▶️ Watch the Aster & Row CLI Demo](./demoofcli-github.mp4)
+https://github.com/user-attachments/assets/7e4b9e81-7a77-49a4-b18b-c0c3ba31fb03
 
 A reliability-focused AI customer-support agent built for the Aster & Row take-home assignment.
 
