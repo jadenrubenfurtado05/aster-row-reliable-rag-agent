@@ -1,5 +1,7 @@
 # Aster & Row Reliable RAG Support Agent
 
+[▶️ Watch the Aster & Row CLI Demo](./demoofcli-github.mp4)
+
 A reliability-focused AI customer-support agent built for the Aster & Row take-home assignment.
 
 The system combines **retrieval-augmented generation (RAG)**, **metadata-aware document precedence**, **safe order lookup**, **multi-turn session memory**, **prompt-injection resistance**, **privacy filtering**, **source-conflict detection**, and a **deterministic evaluation suite**.
