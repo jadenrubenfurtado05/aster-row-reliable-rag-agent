@@ -11,7 +11,7 @@ def test_1_eval_file_loads_correctly():
     with open(eval_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     assert "cases" in data
-    assert len(data["cases"]) == 15
+    assert len(data["cases"]) == 20
 
 def test_2_3_4_evaluation_harness_processing():
     summary = run_evaluation()
@@ -19,7 +19,7 @@ def test_2_3_4_evaluation_harness_processing():
     assert "passed" in summary
     assert "failed" in summary
     assert "pass_rate" in summary
-    assert summary["total"] == 15
+    assert summary["total"] == 20
 
 def test_5_source_validation():
     response = AgentResponse(

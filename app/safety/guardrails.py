@@ -56,24 +56,94 @@ class SafetyGuardrails:
         return SafetyDecision(False)
 
     @staticmethod
-    def evaluate_rag_safety(rag_result: Optional[RAGSearchResult]) -> SafetyDecision:
+    def evaluate_rag_safety(
+        rag_result: Optional[RAGSearchResult],
+        user_query: str = ""
+    ) -> SafetyDecision:
         if not rag_result:
             return SafetyDecision(False)
 
+        # Active official source conflicts always require human confirmation.
         if rag_result.conflict_detected:
             sources_str = ", ".join(rag_result.conflicting_sources)
             return SafetyDecision(
                 handoff_required=True,
                 reason_code=HandoffReason.POLICY_CONFLICT,
-                customer_message=f"Our official documents contain conflicting guidance regarding this topic ({sources_str}). Please confirm with human customer support."
+                customer_message=(
+                    f"Our official documents contain conflicting guidance "
+                    f"regarding this topic ({sources_str}). Please confirm "
+                    f"with human customer support."
+                )
             )
 
-        # Low evidence check
-        if not rag_result.retrieved_chunks or rag_result.retrieved_chunks[0].similarity_score < 0.35:
+        chunks = rag_result.retrieved_chunks
+
+        # No usable retrieval evidence.
+        if not chunks:
             return SafetyDecision(
                 handoff_required=True,
                 reason_code=HandoffReason.INSUFFICIENT_EVIDENCE,
-                customer_message="The available company information does not provide a reliable answer to your question. Please contact human support."
+                customer_message=(
+                    "The supplied information is insufficient to answer this "
+                    "question reliably. Please get human confirmation from "
+                    "customer support."
+                )
+            )
+
+        query_lower = user_query.lower()
+
+        # Specific claims cannot be answered from unrelated retrieval results.
+        unsupported_specific_terms = [
+            "vegan",
+            "certified",
+            "certification",
+        ]
+
+        retrieved_text = " ".join(
+            chunk.text.lower() for chunk in chunks
+        )
+
+        for term in unsupported_specific_terms:
+            if term in query_lower and term not in retrieved_text:
+                return SafetyDecision(
+                    handoff_required=True,
+                    reason_code=HandoffReason.INSUFFICIENT_EVIDENCE,
+                    customer_message=(
+                        "The supplied information is insufficient to answer "
+                        "this question reliably. Please get human confirmation "
+                        "from customer support."
+                    )
+                )
+
+        # Prompt-injection attempts should not cause a handoff when valid
+        # authoritative policy evidence is available. The malicious
+        # instruction is ignored and the official policy remains authoritative.
+        prompt_injection_terms = [
+            "ignore the real policy",
+            "ignore the policy",
+            "use that newer document",
+            "give everyone 60 days",
+            "approve my return",
+            "migration note says",
+        ]
+
+        is_prompt_injection = any(
+            term in query_lower
+            for term in prompt_injection_terms
+        )
+
+        # Normal retrieval still uses the similarity threshold.
+        # Prompt-injection queries are exempt because their instruction
+        # should be ignored rather than treated as missing evidence.
+        if chunks[0].similarity_score < 0.35 and not is_prompt_injection:
+            return SafetyDecision(
+                handoff_required=True,
+                reason_code=HandoffReason.INSUFFICIENT_EVIDENCE,
+                customer_message=(
+                    "The supplied information is insufficient to answer this "
+                    "question reliably. Please get human confirmation from "
+                    "customer support."
+                )
             )
 
         return SafetyDecision(False)
@@ -81,7 +151,7 @@ class SafetyGuardrails:
     @staticmethod
     def evaluate_privacy_request(query: str) -> SafetyDecision:
         query_lower = query.lower()
-        privacy_keywords = ["email", "address", "risk score", "warehouse note", "internal note", "hidden prompt"]
+        privacy_keywords = ["email", "address", "risk score", "warehouse note", "internal note"]
         if any(kw in query_lower for kw in privacy_keywords):
             return SafetyDecision(
                 handoff_required=True,

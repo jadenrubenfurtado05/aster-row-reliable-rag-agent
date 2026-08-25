@@ -41,6 +41,11 @@ wheels/
 .pytest_cache/
 .coverage
 htmlcov/
+coverage.xml
 
 # Local cache & data
 .cache/
+
+# Generated / local model and vector-store files
+*.faiss
+*.index

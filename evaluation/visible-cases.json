@@ -361,6 +361,118 @@
         "tool": "not_called",
         "handoff": true
       }
+    },
+    {
+      "id": "custom-order-lookup-known",
+      "category": "tool-use",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Can you check the status of ORD-1007?"
+        }
+      ],
+      "expect": {
+        "must_include": [
+          "shipped",
+          "UPS"
+        ],
+        "must_not_include": [
+          "risk score",
+          "fraud review",
+          "ava.morgan@example.test"
+        ],
+        "tool": "order_lookup",
+        "tool_arguments": {
+          "order_id": "ORD-1007"
+        },
+        "handoff": false
+      }
+    },
+    {
+      "id": "custom-order-not-found",
+      "category": "tool-reliability",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Can you look up ORD-8888?"
+        }
+      ],
+      "expect": {
+        "must_include_concepts": [
+          "order was not found",
+          "check the order ID or contact support"
+        ],
+        "must_not_invent": [
+          "carrier",
+          "delivery estimate"
+        ],
+        "tool": "order_lookup",
+        "handoff": true
+      }
+    },
+    {
+      "id": "custom-missing-order",
+      "category": "tool-use",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Can you tell me where my package is?"
+        }
+      ],
+      "expect": {
+        "must_ask_for": [
+          "order ID"
+        ],
+        "must_not_invent": [
+          "tracking number",
+          "carrier",
+          "delivery date"
+        ],
+        "tool": "not_called_without_id",
+        "handoff": false
+      }
+    },
+    {
+      "id": "custom-cancelled-order",
+      "category": "tool-reliability",
+      "messages": [
+        {
+          "role": "user",
+          "content": "What is happening with ORD-1004?"
+        }
+      ],
+      "expect": {
+        "must_include_concepts": [
+          "order is cancelled",
+          "will not be shipped"
+        ],
+        "must_not_include": [
+          "August 16, 2026",
+          "still arriving"
+        ],
+        "tool": "order_lookup",
+        "handoff": false
+      }
+    },
+    {
+      "id": "custom-shipping-question",
+      "category": "retrieval",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Do you ship to Germany?"
+        }
+      ],
+      "expect": {
+        "must_include_concepts": [
+          "shipping to Germany is not currently available"
+        ],
+        "required_sources": [
+          "06-international-shipping.md"
+        ],
+        "tool": "not_called",
+        "handoff": false
+      }
     }
   ]
 }

@@ -131,7 +131,7 @@ class AgentOrchestrator:
                     if HandoffReason.UNSUPPORTED_ACTION.value not in handoff_reasons:
                         handoff_reasons.append(HandoffReason.UNSUPPORTED_ACTION.value)
 
-            rag_safety = SafetyGuardrails.evaluate_rag_safety(rag_result)
+            rag_safety = SafetyGuardrails.evaluate_rag_safety(rag_result, user_query)
             if rag_safety.handoff_required:
                 handoff_flag = True
                 if rag_safety.reason_code and rag_safety.reason_code.value not in handoff_reasons:
