@@ -65,7 +65,7 @@ class AgentOrchestrator:
                     sources=[],
                     handoff=False,
                     tool_used=None,
-                    trace_metadata={"session_id": session_id, "missing_order_id": True}
+                    trace_metadata={"session_id": session_id, "detected_order_id": detected_order_id, "missing_order_id": True}
                 )
                 self.session_memory.add_turn(session_id, user_query, response.answer)
                 return response
